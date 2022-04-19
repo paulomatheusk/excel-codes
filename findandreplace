@@ -1,0 +1,71 @@
+'Este script em VBA procura palavras da coluna 2 (De) em textos presentes na coluna 1 (Texto) e substitui as palavras para o correspondente na coluna 3 (Para), utilizando RegEx
+
+Sub UpdateSql2()
+
+    Dim wwork As Worksheet
+    Dim ssql As String
+    Dim sde As String
+    Dim spara As String
+    Dim ipos As Integer
+    Dim rRegEx As RegExp
+    Dim soriginal As String
+    Dim snovo As String
+    Dim spattern As String
+    Dim ilen As Integer
+    Dim LastRow As Long
+     LastRow = Range("A" & Rows.Count).End(xlUp).Row
+    
+    
+    'For j = 736 To 1054 ' Cada texto
+    For j = 2 To LastRow ' Cada texto
+ 
+
+        ssql = Worksheets("Substituição").Cells(j, 2).Value
+        ssql = Replace(ssql, "&quot;", """", , , vbTextCompare)
+        ' ssql = Replace(ssql, soriginal, snovo, , , vbTextCompare)
+        ssql = Replace(ssql, "&amp;", "&", , , vbTextCompare)
+        ssql = Replace(ssql, "&gt;", ">", , , vbTextCompare)
+        ssql = Replace(ssql, "&lt;", "<", , , vbTextCompare)
+        ssql = Replace(ssql, "&#58;", ":", , , vbTextCompare)
+        ssql = Replace(ssql, "&#160;", "", , , vbTextCompare)
+        ssql = Replace(ssql, "&#123;", "{", , , vbTextCompare)
+        ssql = Replace(ssql, "&#125;", "}", , , vbTextCompare)
+        
+        'For i = 2 To 708 ' Cada De-Para
+         For i = 2 To 321 ' Cada De-Para
+        'For i = 1 To 1 ' Cada De-Para
+        
+            sde = Worksheets("DEPARA").Cells(i, 4).Value
+            spara = Worksheets("DEPARA").Cells(i, 5).Value
+            spattern = "[^a-zA-Z_.]" & sde & "[^a-zA-Z_]"
+        
+            Set rRegEx = New RegExp
+            With rRegEx
+                .Pattern = spattern
+                .Global = True
+                .MultiLine = True
+                .IgnoreCase = True
+            End With
+            
+            Set matches = rRegEx.Execute(ssql)
+            For Each Match In matches
+                soriginal = Match.Value
+                snovo = Replace(soriginal, sde, spara, , , vbTextCompare)
+                ssql = Replace(ssql, soriginal, snovo, , , vbTextCompare)
+                
+            Next Match
+        
+        Next
+        ' ilen = Len(ssql)
+        ' Worksheets("Substituição").Cells(j, 4).Value = ssql
+       ' ssql = "/* alter session set nls_language='AMERICAN'; */" & vbNewLine & ssql
+        Open "Caminhodoarquivo\" & j & ".txt" For Output As #1
+            Print #1, ssql
+        Close #1
+        
+        
+        
+    Next
+
+End Sub
+
