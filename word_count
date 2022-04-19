@@ -1,0 +1,6 @@
+Use a fórmula abaixo para contar cada palavra da coluna B encontrados dentro dos textos da coluna A
+
+= SOMA(NÚM.CARACT(A:A)-NÚM.CARACT(SUBSTITUIR(A:A;B2;"")))/NÚM.CARACT(B2)
+
+Escreva no primeiro e arraste da primeira a última linha da coluna B (palavras a serem encontradas.)
+
